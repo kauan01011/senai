@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Rota HTTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        #response {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Testar Rota HTTP</h1>
+
+    <label for="routeInput">Digite a URL:</label><br>
+    <input type="text" id="routeInput" placeholder="https://example.com/api" size="50"><br><br>
+    <button id="testButton">Testar</button>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('testButton').addEventListener('click', function() {
+            const url = document.getElementById('routeInput').value;
+            const responseDiv = document.getElementById('response');
+
+            if (!url) {
+                responseDiv.textContent = 'Por favor, insira uma URL válida.';
+                return;
+            }
+
+            responseDiv.textContent = 'Testando...';
+
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify({
+                    "usuario": "a1b2c3",
+                    "senha": "a1b2c3"
+                }),
+                headers: {
+                    'Type':'application/json',
+                    'Content-Type':'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro: ${response.status} ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    responseDiv.textContent = `Resposta: \n${data}`;
+                })
+                .catch(error => {
+                    responseDiv.textContent = `Erro ao fazer a requisição: ${error.message}`;
+                });
+        });
+    </script>
+
+</body>
+</html>
