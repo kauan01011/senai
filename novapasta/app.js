@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 8080
 const path = require('path');
-
+const db = require('../database')
 
 // Serve the 'index.html' file from the root
 
@@ -17,6 +17,17 @@ app.get('/', (req, res) => {
   res.send('Funcionou essa p****!')
 })
 
+app.get('/usuario/:id', (req, res) => {
+	parametro = req.params.id
+  db.get("SELECT * FROM user WHERE id = ?", parametro, (error, row) => {
+  	if(error) {
+    	res.json(error)
+      return
+    }
+    res.send(row)
+  })
+})
+
 //Cole sua rota POST aqui
 app.post('/', (req, res) => {
     console.log('Dados recebidos no body:', req.body);
@@ -26,3 +37,4 @@ app.post('/', (req, res) => {
 app.listen(port, () => {
 console.log(`Example app listening on port ${port}`)
 })
+
