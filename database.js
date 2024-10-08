@@ -1,10 +1,11 @@
 const mysql = require('mysql2')
+require('dotenv').config();
 
 const pool = mysql.createPool({
-  host: '200.9.22.2',
-  user: 'senai-dev',
-  password: 'mensagemapagada99',
-  database: 'senai-dev',
+  host: process.env.DB_HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
   waitForConnections: true,   // Espera por conexões disponíveis
   connectionLimit: 10,        // Limite máximo de conexões no pool
   queueLimit: 0               // Número máximo de conexões em espera (0 = ilimitado)

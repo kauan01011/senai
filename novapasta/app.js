@@ -1,8 +1,8 @@
-const express = require('express')
-const app = express()
-const port = 8080
+const express = require('express');
+const app = express();
+const port = 8080;
 const path = require('path');
-const db = require("../database")
+const db = require("../database");
 
 // Middleware para habilitar o parsing de JSON no body
 app.use(express.json());
@@ -13,14 +13,14 @@ app.get('/api-tester', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Funcionou essa p****!')
-})
+  res.send('Funcionou essa p****!');
+});
 
 // Listar todas as tarefas
 app.get('/tasks', (req, res) => {
   db.query('SELECT * FROM tasks', (err, rows) => {
     if (err) {
-      console.log('Error: ' + err)
+      console.log('Error: ' + err);
       return res.status(500).json({ error: 'Erro ao listar as tarefas.' });
     }
     res.json(rows);
@@ -32,7 +32,7 @@ app.get('/tasks/:id', (req, res) => {
   const parametro = req.params.id;
   db.query(`SELECT * FROM tasks WHERE id = ${parametro}`, (err, rows) => {
     if (err) {
-      console.log('Error: ' + err)
+      console.log('Error: ' + err);
       return res.status(500).json({ error: 'Erro ao buscar a tarefa.' });
     }
     if (rows.length === 0) {
@@ -113,6 +113,26 @@ app.delete('/tasks/:id', (req, res) => {
     }
 
     res.json({ message: 'Tarefa excluída com sucesso!' });
+  });
+});
+
+// Criar um novo usuário com o nome fixo "Kauan"
+app.post('/users', (req, res) => {
+  const nome = "Kauan"; // Nome fixo
+
+  const query = 'INSERT INTO users (nome) VALUES (?)';
+  db.query(query, [nome], (err, result) => {
+    if (err) {
+      console.log('Error: ' + err);
+      return res.status(500).json({ error: 'Erro ao criar o usuário.' });
+    }
+
+    const newUser = {
+      id: result.insertId,
+      nome
+    };
+
+    res.status(201).json(newUser);
   });
 });
 
