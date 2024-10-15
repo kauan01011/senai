@@ -7,7 +7,7 @@ const db = require("../database");
 // Middleware para habilitar o parsing de JSON no body
 app.use(express.json());
 
-// Serve the 'index.html' file from the root
+// Serve the 'index.html' file from o root
 app.get('/api-tester', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
@@ -116,7 +116,9 @@ app.delete('/tasks/:id', (req, res) => {
   });
 });
 
-// Criar um novo usuário com o nome fixo "Kauan"
+// CRUD para "users"
+
+// 1. Criar um novo usuário com nome fixo "Kauan"
 app.post('/users', (req, res) => {
   const nome = "Kauan"; // Nome fixo
 
@@ -133,6 +135,77 @@ app.post('/users', (req, res) => {
     };
 
     res.status(201).json(newUser);
+  });
+});
+
+// 2. Listar todos os usuários
+app.get('/users', (req, res) => {
+  db.query('SELECT * FROM users', (err, rows) => {
+    if (err) {
+      console.error('Error: ' + err);
+      return res.status(500).json({ error: 'Erro ao listar os usuários.' });
+    }
+    res.json(rows);
+  });
+});
+
+// 3. Listar um usuário por ID
+app.get('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.query('SELECT * FROM users WHERE id = ?', [id], (err, rows) => {
+    if (err) {
+      console.error('Error: ' + err);
+      return res.status(500).json({ error: 'Erro ao buscar o usuário.' });
+    }
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.json(rows[0]);
+  });
+});
+
+// 4. Editar um usuário
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+
+  if (!nome) {
+    return res.status(400).json({ error: 'O campo nome é obrigatório para atualizar.' });
+  }
+
+  const query = 'UPDATE users SET nome = ? WHERE id = ?';
+  db.query(query, [nome, id], (err, result) => {
+    if (err) {
+      console.error('Error: ' + err);
+      return res.status(500).json({ error: 'Erro ao atualizar o usuário.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.json({ message: 'Usuário atualizado com sucesso!' });
+  });
+});
+
+// 5. Excluir um usuário
+app.delete('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.query('DELETE FROM users WHERE id = ?', [id], (err, result) => {
+    if (err) {
+      console.error('Error: ' + err);
+      return res.status(500).json({ error: 'Erro ao excluir o usuário.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.json({ message: 'Usuário excluído com sucesso!' });
   });
 });
 
